@@ -29,12 +29,6 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: GitHub Packages認証の設定
-        if: github.repository != 'redamoon/design-tools'
-        run: |
-          echo "@redamoon:registry=https://npm.pkg.github.com" >> .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
-
       - name: 依存関係のインストール
         run: pnpm install
 
