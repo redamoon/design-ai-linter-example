@@ -1,0 +1,41 @@
+{
+  "source": {
+    "type": "tokensJson",
+    "path": "./tokens.json"
+  },
+  "rules": {
+    "naming-convention": {
+      "severity": "error",
+      "pattern": "^([a-z]+)(\\.[a-z0-9\\-]+)*$"
+    },
+    "raw-values": {
+      "severity": "warn"
+    },
+    "duplicates": {
+      "severity": "warn"
+    },
+    "ai-naming-consistency": {
+      "severity": "warn"
+    },
+    "ai-spacing-consistency": {
+      "severity": "warn"
+    },
+    "ai-design-complexity": {
+      "severity": "info"
+    },
+    "custom-rules": [
+      {
+        "id": "custom-brand-check",
+        "description": "ブランドカラーの使用をチェックするカスタムルール",
+        "severity": "warn",
+        "prompt": "./prompts/custom-rule.md",
+        "schema": "./schemas/custom-rule.ts"
+      }
+    ]
+  },
+  "report": {
+    "format": ["console"],
+    "outputPath": "./reports"
+  }
+}
+

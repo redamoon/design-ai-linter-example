@@ -1,0 +1,31 @@
+{
+  "name": "design-ai-linter-example",
+  "version": "1.0.0",
+  "description": "design-ai-linterを使用したデザインチェックのサンプルリポジトリ",
+  "type": "module",
+  "scripts": {
+    "lint": "dslint lint",
+    "fix": "dslint fix",
+    "lint:staged": "dslint lint --staged",
+    "lint:all": "dslint lint --files \"src/**/*.{tsx,css,ts}\""
+  },
+  "keywords": [
+    "design-system",
+    "linter",
+    "figma",
+    "tokens"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@redamoon/design-ai-linter": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0",
+    "zod": "^3.22.0"
+  },
+  "packageManager": "pnpm@8.0.0"
+}
+
