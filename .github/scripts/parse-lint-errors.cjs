@@ -43,7 +43,9 @@ function parseMarkdownReport(mdPath) {
     
     // コンソール形式のエラーを抽出（[ERROR] や [WARN] で始まる行）
     // 複数行にまたがる情報を正しく抽出するため、ブロック単位で解析
-    const consoleErrorBlocks = content.match(/\[(ERROR|WARN|INFO)\][^\[]+/g) || [];
+    // エスケープシーケンスを除去
+    const cleanContent = content.replace(/\x1b\[[0-9;]*m/g, '');
+    const consoleErrorBlocks = cleanContent.match(/\[(ERROR|WARN|INFO)\][^\[]+(?=\n\[(?:ERROR|WARN|INFO)\]|$)/g) || [];
     const consoleErrors = new Map(); // トークン名をキーにして重複を避ける
     
     for (const block of consoleErrorBlocks) {
@@ -57,7 +59,7 @@ function parseMarkdownReport(mdPath) {
       const ruleMatch = block.match(/\[(?:ERROR|WARN|INFO)\]\s+([^:]+):/);
       const rule = ruleMatch ? ruleMatch[1].trim() : null;
       
-      // メッセージを抽出
+      // メッセージを抽出（最初の行）
       const messageMatch = block.match(/\[(?:ERROR|WARN|INFO)\]\s+[^:]+:\s*(.+?)(?:\n|$)/);
       const message = messageMatch ? messageMatch[1].trim() : null;
       
@@ -65,7 +67,7 @@ function parseMarkdownReport(mdPath) {
       let tokenName = null;
       const tokenPatterns = [
         /Token name\s+"([^"]+)"/,
-        /トークン[:\s]+([^\n]+)/,
+        /トークン[:\s]+([^\n\s]+)/,
       ];
       
       for (const pattern of tokenPatterns) {
@@ -87,7 +89,7 @@ function parseMarkdownReport(mdPath) {
             file: 'tokens.json',
             line: null,
             severity: severity === 'error' ? 'error' : severity === 'warn' ? 'warning' : 'info',
-            message: message || `Token name "${tokenName}" does not match pattern`,
+            message: message || (tokenName ? `Token name "${tokenName}" does not match pattern` : 'エラーが検出されました'),
             rule: rule,
             token: tokenName,
             suggestion: suggestion,
