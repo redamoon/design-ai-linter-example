@@ -35,7 +35,7 @@ jobs:
       - name: design-ai-linterの実行
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: pnpm exec dslint lint --model gemini-2.5-flash
+        run: pnpm exec dslint lint --model gemini-2.5-flash --json reports/lint-report.json
 
       - name: レポートのアップロード
         if: always()
@@ -44,4 +44,5 @@ jobs:
           name: design-lint-report
           path: reports/
           retention-days: 7
+          if-no-files-found: warn
 
