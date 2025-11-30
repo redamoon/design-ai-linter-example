@@ -18,7 +18,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@redamoon/design-ai-linter": "^1.0.0"
+    "@redamoon/design-ai-linter": "github:redamoon/design-tools#main:packages/design-ai-linter"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
