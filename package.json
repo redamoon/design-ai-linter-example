@@ -4,10 +4,10 @@
   "description": "design-ai-linterを使用したデザインチェックのサンプルリポジトリ",
   "type": "module",
   "scripts": {
-    "lint": "npx @design-tools/design-ai-linter lint",
-    "fix": "npx @design-tools/design-ai-linter fix",
-    "lint:staged": "npx @design-tools/design-ai-linter lint --staged",
-    "lint:all": "npx @design-tools/design-ai-linter lint --files \"src/**/*.{tsx,css,ts}\""
+    "lint": "dslint lint",
+    "fix": "dslint fix",
+    "lint:staged": "dslint lint --staged",
+    "lint:all": "dslint lint --files \"src/**/*.{tsx,css,ts}\""
   },
   "keywords": [
     "design-system",
