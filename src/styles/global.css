@@ -50,6 +50,7 @@ p {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 32px;
+  gap: 20px; /* 警告: 生の値 20px を使用 */
 }
 
 .card {

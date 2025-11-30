@@ -13,6 +13,10 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
 
     steps:
       - name: リポジトリのチェックアウト
@@ -38,14 +42,120 @@ jobs:
       - name: design-ai-linterの実行
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: pnpm exec dslint lint --model gemini-2.5-flash --pr-comment > reports/lint-report.md || true
+        run: |
+          # 標準出力とエラー出力の両方をキャプチャ
+          pnpm exec dslint lint --model gemini-2.5-flash --pr-comment > reports/lint-report.md 2>&1 || true
+          exit_code=$?
+          
+          # レポートファイルが存在することを確認
+          if [ ! -f reports/lint-report.md ]; then
+            echo "⚠️ レポートファイルが生成されませんでした" > reports/lint-report.md
+          fi
+          
+          # JSON形式のレポートも確認（designlintrc.jsonで設定済み）
+          if [ ! -f reports/lint-report.json ]; then
+            echo "{}" > reports/lint-report.json
+          fi
+          
+          # エラーがあっても続行するため、exit_codeは後で使用
+          echo "exit_code=$exit_code" >> $GITHUB_ENV
+
+      - name: エラー情報の抽出と整形
+        if: always()
+        run: |
+          node .github/scripts/parse-lint-errors.cjs reports reports/pr-comment.md || true
+          
+      - name: PRコメントとしてレポートを投稿
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // 整形されたPRコメント用のマークダウンを読み込む
+            const prCommentPath = 'reports/pr-comment.md';
+            let commentBody = '';
+            
+            if (fs.existsSync(prCommentPath)) {
+              commentBody = fs.readFileSync(prCommentPath, 'utf8');
+            } else {
+              // フォールバック: 元のマークダウンレポートを使用
+              const reportPath = 'reports/lint-report.md';
+              if (fs.existsSync(reportPath)) {
+                const reportContent = fs.readFileSync(reportPath, 'utf8');
+                if (reportContent.trim()) {
+                  commentBody = `## 🔍 Design AI Linter Report\n\n${reportContent}`;
+                }
+              }
+            }
+            
+            // エラー情報のJSONも読み込む（デバッグ用）
+            let errorInfo = null;
+            const errorJsonPath = 'reports/errors.json';
+            if (fs.existsSync(errorJsonPath)) {
+              try {
+                errorInfo = JSON.parse(fs.readFileSync(errorJsonPath, 'utf8'));
+              } catch (e) {
+                console.log('エラー情報のJSONの読み込みに失敗しました:', e.message);
+              }
+            }
+            
+            // コメントが空の場合はスキップ
+            if (!commentBody.trim()) {
+              console.log('コメント内容が空のため、PRコメントをスキップします');
+              return;
+            }
+            
+            // 既存のコメントを検索
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              (comment.body.includes('Design AI Linter Report') || 
+               comment.body.includes('Design AI Linter'))
+            );
+            
+            // コメントを投稿または更新
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              console.log('PRコメントを更新しました');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+              console.log('PRコメントを投稿しました');
+            }
+            
+            // エラー情報がある場合はログに出力
+            if (errorInfo && errorInfo.hasErrors) {
+              console.log('エラーサマリー:', JSON.stringify(errorInfo.summary, null, 2));
+            }
 
       - name: レポートのアップロード
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: design-lint-report
-          path: reports/lint-report.md
+          path: |
+            reports/lint-report.md
+            reports/lint-report.json
+            reports/pr-comment.md
+            reports/errors.json
           retention-days: 7
           if-no-files-found: warn
 

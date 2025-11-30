@@ -50,7 +50,7 @@ export const tokens = {
     '2xl': '48px',
   },
   typography: {
-    fontSize: {
+    fontsize: {
       xs: '12px',
       sm: '14px',
       base: '16px',
@@ -59,19 +59,19 @@ export const tokens = {
       '2xl': '24px',
       '3xl': '30px',
     },
-    fontWeight: {
+    fontweight: {
       normal: 400,
       medium: 500,
       semibold: 600,
       bold: 700,
     },
-    lineHeight: {
+    lineheight: {
       tight: 1.25,
       normal: 1.5,
       relaxed: 1.75,
     },
   },
-  borderRadius: {
+  borderradius: {
     none: '0px',
     sm: '4px',
     md: '8px',
@@ -115,14 +115,14 @@ export const getSpacing = (size: keyof typeof tokens.spacing): string => {
  * タイポグラフィトークンを取得
  */
 export const getTypography = {
-  fontSize: (size: keyof typeof tokens.typography.fontSize): string => {
-    return tokens.typography.fontSize[size];
+  fontSize: (size: keyof typeof tokens.typography.fontsize): string => {
+    return tokens.typography.fontsize[size];
   },
-  fontWeight: (weight: keyof typeof tokens.typography.fontWeight): number => {
-    return tokens.typography.fontWeight[weight];
+  fontWeight: (weight: keyof typeof tokens.typography.fontweight): number => {
+    return tokens.typography.fontweight[weight];
   },
-  lineHeight: (height: keyof typeof tokens.typography.lineHeight): number => {
-    return tokens.typography.lineHeight[height];
+  lineHeight: (height: keyof typeof tokens.typography.lineheight): number => {
+    return tokens.typography.lineheight[height];
   },
 };
 

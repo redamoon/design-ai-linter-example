@@ -30,6 +30,7 @@ export const Button: React.FC<ButtonProps> = ({
     fontFamily: 'Inter, system-ui, sans-serif',
     fontWeight: 500,
     transition: 'all 0.2s',
+    marginTop: '10px', // 警告: 生の値 10px を使用
   };
 
   const variantStyles: Record<string, React.CSSProperties> = {
