@@ -19,6 +19,8 @@ design-ai-linterを使用したデザインチェックのサンプルリポジ�
 pnpm install
 ```
 
+**注意**: Voltaを使用している場合、`pnpm install`でエラーが発生する場合は、`npm install`を使用してください（`package-lock.json`は自動的に`.gitignore`で除外されます）。
+
 ### 2. 環境変数の設定（AI機能を使用する場合）
 
 `.env`ファイルを作成し、以下のいずれかを設定します：
