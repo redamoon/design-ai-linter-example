@@ -30,7 +30,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 依存関係のインストール
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: design-ai-linterの実行
         env:
