@@ -38,7 +38,35 @@ jobs:
       - name: design-ai-linterの実行
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: pnpm exec dslint lint --model gemini-2.5-flash --pr-comment > reports/lint-report.md || true
+        run: |
+          pnpm exec dslint lint --model gemini-2.5-flash --pr-comment > reports/lint-report.md || true
+          exit_code=$?
+          if [ $exit_code -ne 0 ]; then
+            echo "Linter found errors or warnings"
+          fi
+          exit $exit_code
+
+      - name: PRコメントとしてレポートを投稿
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const reportPath = 'reports/lint-report.md';
+            if (fs.existsSync(reportPath)) {
+              const reportContent = fs.readFileSync(reportPath, 'utf8');
+              
+              if (reportContent.trim()) {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: `## Design AI Linter Report\n\n${reportContent}`
+                });
+              }
+            }
 
       - name: レポートのアップロード
         if: always()
