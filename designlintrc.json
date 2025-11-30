@@ -29,7 +29,7 @@
         "description": "ブランドカラーの使用をチェックするカスタムルール",
         "severity": "warn",
         "prompt": "./prompts/custom-rule.md",
-        "schema": "./schemas/custom-rule.js"
+        "schema": "./schemas/custom-rule.mjs"
       }
     ]
   },
