@@ -36,7 +36,6 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: pnpm exec dslint lint --model gemini-2.5-flash
-        continue-on-error: true
 
       - name: レポートのアップロード
         if: always()
