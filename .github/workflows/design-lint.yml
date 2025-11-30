@@ -32,6 +32,9 @@ jobs:
       - name: 依存関係のインストール
         run: pnpm install
 
+      - name: レポートディレクトリの作成
+        run: mkdir -p reports
+
       - name: design-ai-linterの実行
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
