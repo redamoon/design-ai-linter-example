@@ -169,7 +169,7 @@ function formatErrorsForPR(errors) {
   if (!errors || errors.length === 0) {
     return {
       hasErrors: false,
-      markdown: '## ✅ Design AI Linter Report\n\nエラーは検出されませんでした。',
+      markdown: '## ✅ Design AI Linter Report\n\nエラーと警告は検出されませんでした。',
     };
   }
   
@@ -199,8 +199,8 @@ function formatErrorsForPR(errors) {
   markdown += `- ⚠️ **警告**: ${severityCounts.warning}件\n`;
   markdown += `- ℹ️ **情報**: ${severityCounts.info}件\n\n`;
   
-  // ファイルごとのエラー詳細
-  markdown += '### エラー詳細\n\n';
+  // ファイルごとのエラー・警告詳細
+  markdown += '### 検出された問題\n\n';
   
   for (const [file, fileErrors] of Object.entries(grouped)) {
     markdown += `#### \`${file}\`\n\n`;
@@ -221,8 +221,11 @@ function formatErrorsForPR(errors) {
     markdown += '\n';
   }
   
+  // エラーまたは警告がある場合はtrue
+  const hasIssues = severityCounts.error > 0 || severityCounts.warning > 0 || severityCounts.info > 0;
+  
   return {
-    hasErrors: true,
+    hasErrors: hasIssues,
     markdown,
     errors,
     summary: severityCounts,
